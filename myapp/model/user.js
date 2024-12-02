@@ -65,7 +65,10 @@ module.exports = {
     setRecruiter: function(userId, callback) {
         const sql = "UPDATE users SET status = 'recruiter' WHERE user_id = ?";
         db.query(sql, [userId], function(err, result) {
-            if (err) throw err;
+            if (err) {
+                console.error("Error updating user role to recruiter:", err);
+                return callback(false);
+            }
             callback(result.affectedRows > 0);
         });
     },

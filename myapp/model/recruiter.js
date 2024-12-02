@@ -25,7 +25,10 @@ module.exports = {
     create: function(validatedBy, organizationId, userId, callback) {
         const sql = "INSERT INTO recruiter (validated_by, organization_id, recruiter_id) VALUES (?, ?, ?)";
         db.query(sql, [validatedBy, organizationId, userId], function(err, result) {
-            if (err) throw err;
+            if (err) {
+                console.error("Error creating recruiter:", err);
+                return callback(null);
+            }
             callback(result.insertId);
         });
     },

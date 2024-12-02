@@ -54,6 +54,8 @@ app.all('*', (req, res, next) => {
     '/admin/delete-organization/:id',
     '/admin/accept-organization/:id',
     '/admin/deny-organization/:id',
+    '/admin/accept-recruiter-request/:id',
+    '/admin/deny-recruiter-request/:id',
     '/admin/add-user',
     '/admin/activate-user/:id',
     '/admin/deactivate-user/:id',

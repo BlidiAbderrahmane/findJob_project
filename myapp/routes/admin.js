@@ -5,6 +5,7 @@ const adminModel = require('../model/admin.js');
 const organizationModel = require('../model/organization.js');
 const organizationRequestModel = require('../model/organization_request.js');
 const recruiterRequestModel = require('../model/recruiter_request.js');
+const recruiterModel = require('../model/recruiter.js');
 
 // Get all users
 router.get('/users', function (req, res, next) {
@@ -347,6 +348,70 @@ router.post('/update-organization', function (req, res, next) {
         }
     });
 });
+
+
+// Deny recruiter request
+router.get('/deny-recruiter-request/:id', function (req, res, next) {
+    console.log("Deny Recruiter Request Route Triggered, ID:", req.params.id);
+    let requestId = req.params.id;
+    console.log("Denying recruiter request ID:", requestId);
+    recruiterRequestModel.deleteById(requestId, function(success) {
+        if (success) {
+            console.log("Recruiter request denied successfully.");
+            fetchAndRenderRecruiterRequestsWithMessage(res, 'denied');
+        } else {
+            console.error("Failed to deny recruiter request.");
+            fetchAndRenderRecruiterRequestsWithMessage(res, 'error');
+        }
+    });
+});
+
+// Accept recruiter request
+router.get('/accept-recruiter-request/:id', function (req, res, next) {
+    let requestId = req.params.id;
+    let adminId = req.session.userId;
+
+    recruiterRequestModel.getById(requestId, function(err, request) {
+        if (err || !request) {
+            console.error("Error fetching recruiter request:", err|| "Request not found.");
+            return res.status(404).send("Recruiter request not found.");
+        }
+
+        recruiterModel.create(adminId, request.organization_id, request.user_id, function(insertId) {
+            if (insertId) {
+                recruiterRequestModel.deleteById(requestId, function(err, success) {
+                    fetchAndRenderRecruiterRequestsWithMessage(res, 'accepted');
+                });
+
+                userModel.setRecruiter(request.user_id, function(success) {
+                    if (success) {
+                    } else {
+                        console.error('Error assigning recruiter role.');
+                    }
+                });
+            } else {
+                console.error("Error creating recruiter.");
+                fetchAndRenderRecruiterRequestsWithMessage(res, 'error');
+            }
+        });
+    });
+});
+
+// Helper function to fetch and render recruiter requests with a message
+function fetchAndRenderRecruiterRequestsWithMessage(res, message) {
+    recruiterRequestModel.getAll(function(result) {
+        organizationModel.getAll(function(organizationsResult) {
+            if (res.statusCode !== 200) {
+                message = 'error';
+            }
+            res.render('admin_recruiters', {
+                recruiter_requests: result,
+                organizations: organizationsResult,
+                alertMessage: message
+            });
+        });
+    });
+}
 
 
 
