@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheets/recruteur_ajouter_offre.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Recruiter</title>
+</head>
+<body>
+  <% include navbar_recruiter %>
+      
+      <div class="ajouterFiche">
+        <h1>Add a Job Description</h1>
+        <div class="creerOrga">
+            <form action="/recruiter/create-job-description" method="post">
+                <label for="intitule">Title:</label><br>
+                <input type="text" id="intitule" name="intitule" required><br><br>
+                <label for="statut">Status:</label><br>
+                <select id="statut" name="statut">
+                    <option value="cadre">Executive</option>
+                    <option value="etam">ETAM</option>
+                    <option value="autre">Other</option>
+                </select><br><br>
+                <label for="responsable">Supervisor:</label><br>
+                <input type="text" id="responsable" name="responsable" required><br><br>
+                <label for="job">Job:</label><br>
+                <select id="job" name="job">
+                    <% jobs.forEach(job => { %>
+                        <option value="<%= job.job_id %>"><%= job.title %></option>
+                    <% }); %>
+                </select><br><br>
+                <label for="lieu">Location:</label><br>
+                <input type="text" id="lieu" name="lieu" required><br><br>
+                <label for="rythme_heure">Work Hours (per week):</label><br>
+                <input type="text" id="rythme_heure" name="rythme_heure" pattern="[0-9]+" required><br><br>
+                <label for="rythme_teletravail">Remote Work:</label><br>
+                <select id="rythme_teletravail" name="rythme_teletravail" required>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select><br><br>
+                <input type="submit" value="Create Job Description">
+            </form>
+            
+        </div>
+      </div>
+</body>
+</html>

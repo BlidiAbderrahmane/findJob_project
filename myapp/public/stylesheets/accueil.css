@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+html,body{
+    display: grid;
+    width: 100%;
+    padding-top: 0;
+    margin-top: 0;
+    place-items: center;
+    background: -webkit-linear-gradient(left, #003366,#004080,#0059b3
+  , #0073e6);
+}
+
+nav{
+    width: 100%;
+    top: 0;
+    padding-top: 0;
+    margin-top: 0;
+    position: fixed;
+    margin-bottom: 25px;
+}
+
+
+.search-bar {
+    display: flex;
+    width: 80%;
+    margin: 0 auto;
+    margin-bottom: 15px;
+}
+
+.search-bar input[type="text"] {
+    flex: 1; 
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px 0 0 5px; 
+}
+
+.search-bar button {
+    padding: 10px 20px;
+    background:  -webkit-linear-gradient(left, #003366,#004080,#0059b3
+    , #0073e6); 
+    color: #fff;
+    border: none; 
+    border-radius: 0 5px 5px 0; 
+    cursor: pointer;
+}
+
+.search-bar button:hover {
+    background-color: #0056b3;
+}
+
+.lottie-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

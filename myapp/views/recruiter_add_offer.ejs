@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/recruteur_ajouter_offre.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0Yz1ztE263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Recruiter</title>
+</head>
+<body> 
+  <% include navbar_recruiter %>
+      <div class="ajouterOffre">
+        <h1>Add a Job Offer</h1>
+        <div class="creerOrga">
+            <form action="/recruiter/add-offer-submit" method="post">
+                <label for="etat">Offer Status:</label><br>
+                <select id="etat" name="etat">
+                    <option value="non publiee">Not Published</option>
+                    <option value="publiee">Published</option>
+                    <option value="expiree">Expired</option>
+                </select><br><br>
+                <label for="indication">Offer Title:</label><br>
+                <input type="text" id="indication" name="indication" required><br><br>
+                <label for="nbPiece">Number of Attachments:</label><br>
+                <input type="number" id="nbPiece" name="nbPiece" required><br><br>
+                <label for="jobDescription">Job Description:</label><br>
+                <select id="jobDescription" name="jobDescription">
+                    <% jobDescriptions.forEach(description => { %>
+                        <option value="<%= description.id %>"><%= description.intitule %></option>
+                    <% }); %>
+                </select><br><br>
+                <label for="descriptif">Description:</label><br>
+                <textarea id="descriptif" name="descriptif"></textarea><br><br>
+                <input type="text" id="dateVal" name="dateVal" style="display: none;">
+                <input type="submit" value="Create Offer">
+            
+                <!-- Script to automatically populate the date field with the current date -->
+                <script>
+                    // Get the current date in YYYY-MM-DD format
+                    var today = new Date().toISOString().split('T')[0];
+            
+                    // Automatically fill the text field with the current date
+                    document.getElementById('dateVal').value = today;
+                </script>
+            </form>
+            
+        </div>
+    </div>
+</body>
+</html>

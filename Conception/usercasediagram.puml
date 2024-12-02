@@ -1,0 +1,87 @@
+@startuml
+left to right direction
+    skinparam packageStyle rectangle
+
+    actor User as User
+    actor Administrator as Admin
+    actor Recruiter as Recruiter
+    actor Candidate as Candidate
+
+    rectangle "Recruitment Platform" as System {
+    usecase "Log in" as Log_in
+    usecase "Sign up" as Sign_up
+    usecase "Verify password validity" as Verify_password
+    usecase "View job offers" as View_offers
+    usecase "Apply for a job" as Apply_job
+    usecase "View application list" as View_applications
+    usecase "Select an application" as Select_application
+    usecase "Complete an application" as Complete_application
+    usecase "Cancel an application" as Cancel_application
+    usecase "Manage applications" as Manage_applications
+
+    usecase "Manage users" as Manage_users
+    usecase "Manage recruiters" as Manage_recruiters
+    usecase "View user accounts" as View_accounts
+    usecase "Edit account" as Edit_account
+    usecase "Add account" as Add_account
+    usecase "Assign Administrator role" as Assign_role
+    usecase "View recruiter join requests" as View_requests
+    usecase "Accept request" as Accept_request
+    usecase "Reject request" as Reject_request
+    usecase "View organization addition requests" as View_org_requests
+    usecase "Accept organization addition request" as Accept_org_request
+    usecase "Reject organization addition request" as Reject_org_request
+
+    usecase "Manage job offers" as Manage_offers
+    usecase "View offers (admin)" as View_offers_admin
+    usecase "Add job offer" as Add_offer
+    usecase "Edit job offer" as Edit_offer
+    usecase "Delete job offer" as Delete_offer
+    usecase "Add organization" as Add_organization
+
+    usecase "Manage applications (recruiter)" as Manage_recruiter_applications
+    usecase "View applications (recruiter)" as View_recruiter_applications
+    usecase "Select an application (recruiter)" as Select_recruiter_application
+    usecase "Download application file" as Download_application_file
+    }
+
+    User --> Log_in
+    User --> Sign_up
+    Log_in -[dashed]-> Sign_up : <<extends>>
+    Sign_up -[dashed]-> Verify_password : <<includes>>
+    Candidate --> View_offers
+    View_offers -[dashed]-> Apply_job : <<extends>>
+    Candidate --> Manage_applications
+    Manage_applications -[dashed]-> View_applications : <<extends>>
+    View_applications -[dashed]-> Select_application : <<extends>>
+    View_applications -[dashed]-> Complete_application : <<extends>>
+    View_applications -[dashed]-> Cancel_application : <<extends>>
+
+    Admin --> Manage_users
+    Manage_users -[dashed]-> View_accounts : <<extends>>
+    Manage_users -[dashed]-> Edit_account : <<extends>>
+    Manage_users -[dashed]-> Delete_account : <<extends>>
+    Manage_users -[dashed]-> Assign_role : <<extends>>
+    Manage_users -[dashed]-> Add_account : <<extends>>
+
+    Admin --> Manage_recruiters
+    Manage_recruiters -[dashed]-> View_requests : <<extends>>
+    View_requests -[dashed]-> Accept_request : <<extends>>   
+    View_requests -[dashed]-> Reject_request : <<extends>>
+
+    Admin --> View_org_requests
+    View_org_requests -[dashed]-> Accept_org_request : <<extends>>
+    View_org_requests -[dashed]-> Reject_org_request : <<extends>>
+
+    Recruiter --> Manage_offers
+    Manage_offers -[dashed]-> View_offers_admin : <<extends>>
+    Manage_offers -[dashed]-> Add_offer : <<extends>>
+    Manage_offers -[dashed]-> Edit_offer : <<extends>>
+    Manage_offers -[dashed]-> Delete_offer : <<extends>>
+    Recruiter --> Add_organization
+    Add_organization -[dashed]-> View_org_requests : <<includes>>
+    Recruiter --> Manage_recruiter_applications
+    Manage_recruiter_applications -[dashed]-> View_recruiter_applications : <<extends>>
+    View_recruiter_applications -[dashed]-> Select_recruiter_application : <<extends>>
+    View_recruiter_applications -[dashed]-> Download_application_file : <<extends>>
+@enduml

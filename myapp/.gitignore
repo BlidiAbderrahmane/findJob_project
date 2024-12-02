@@ -1,0 +1,13 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore coverage directory
+coverage/
+
+
+# Ignore upload directory
+routes/uploads/ 
+
+# environment file
+.env
+

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/recruteur_ajouter_offre.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Settings</title>
+</head>
+<body> 
+    <% if (session.status === 'recruiter') { %>
+        <% include navbar_recruiter %>
+    <% } else { %>
+        <% if (session.status === 'candidate') { %>
+            <% include navbar_candidate %>
+        <% } 
+        else { %>
+            <% include navbar_admin %>
+        <% } %>
+    <% } %>
+
+    <div class="ajouterOffre">
+        <h1>Settings</h1>
+        <% if (alertMessage) { %>
+            <div class="alert alert-success" role="alert">
+                <%= alertMessage %>
+            </div>
+        <% } %>
+        <div class="creerOrga">
+            <form action="/settings" method="POST">
+                <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" value="<%= session.lastName %>">
+                </div>
+                <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" value="<%= session.firstName %>">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="number" class="form-control" id="phone" name="phone" value="<%= session.phone %>">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" value="">
+                </div>
+                <input type="hidden" id="email" name="email" value="<%= session.email %>">
+                <input type="submit" class="btn btn-success" value="Update Profile">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

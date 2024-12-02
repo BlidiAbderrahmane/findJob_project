@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/recruteur_ajouter_offre.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Recruiter - Edit Offer</title>
+</head>
+<body> 
+    <% include navbar_recruiter %>
+    <div class="ajouterOffre">
+        <h1>Edit an Offer</h1>
+        <div class="creerOrga">
+            <form action="/recruiter/modify-offer-submit" method="POST">
+                <div class="form-group">
+                    <label for="status">Offer Status:</label><br>
+                    <select id="status" name="status">
+                        <option value="not published" <%= offer.status === 'not published' ? 'selected' : '' %>>Not Published</option>
+                        <option value="published" <%= offer.status === 'published' ? 'selected' : '' %>>Published</option>
+                        <option value="expired" <%= offer.status === 'expired' ? 'selected' : '' %>>Expired</option>
+                    </select><br><br>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Title</label>
+                    <input type="text" class="form-control" id="notes" name="notes" value="<%= offer.notes %>">
+                </div>
+                <div class="form-group">
+                    <label for="documentCount">Number of Documents</label>
+                    <input type="number" class="form-control" id="documentCount" name="documentCount" value="<%= offer.document_count %>">
+                </div>
+                <div class="form-group">
+                    <label for="description">Job Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"><%= offer.description %></textarea>
+                </div>
+                <!--   <div class="form-group">
+                    <label for="descriptionDetails">Description Details</label>
+                    <textarea class="form-control" id="descriptionDetails" name="descriptionDetails" rows="3"><%= offer.description_details %></textarea>
+                </div> -->
+                <input type="hidden" id="validationDate" name="validationDate" value="<%= offer.validation_date %>">
+                <input type="hidden" name="offerId" value="<%= offer.offer_id %>">
+                <input type="hidden" name="descriptionId" value="<%= offer.description_id %>">
+                <input type="submit" class="btn btn-success" value="Update Offer">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

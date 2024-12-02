@@ -1,0 +1,101 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+
+class User {
+    #user_id: int
+    email: str
+    last_name: str
+    first_name: str
+    phone: str
+    creation_date: date
+    status: boolean
+    active: boolean
+    password : str
+}
+
+class Administrator {
+    #admin_id
+}
+
+class Recruiter {
+    #recruiter_id
+}
+
+
+User <|-- Administrator
+User <|-- Recruiter
+
+class Organization {
+    #organization_id: int
+    siren: str
+    name: str
+    type: str
+    headquarters: str
+}
+
+
+class JobDescription {
+    #description_id: int
+    title: str
+    status: str
+    manager: str
+    location: str
+    work_hours: int
+    remote_work: boolean
+}
+
+
+
+class JobOffer {
+    #offer_id: int
+    state: JobOfferState
+    validation_date: date
+    indication: str
+    document_count: int
+    description : text
+}
+
+
+class Application {
+    #application_id: int
+    application_date: date
+}
+
+class Document {
+    #document_id: int
+    file: blob
+}
+
+class File {
+    #file_id: int
+}
+
+class OrganizationRequest {
+    #request_id: int
+    name : str
+    type : str
+    siren : str
+    headquarters : str
+}
+
+class RecruiterRequest {
+    #request_id: int
+}
+
+
+Administrator  "1" --  "0..*" Recruiter : validates
+Administrator "1" -- "0..*" Organization : adds
+Recruiter "0..*" -- "0..1" Organization : belongs to
+
+JobDescription "1" -- "0..*" JobOffer : linked to
+JobDescription "0..*" -- "1" Organization : belongs to
+JobDescription "0..*" -- "1" Recruiter : adds
+OrganizationRequest "0..*" -- "1" Recruiter : requests
+RecruiterRequest "0..*" -- "1" Recruiter : requests
+RecruiterRequest "0..*" -- "1" Organization : linked
+
+
+(User, JobOffer) .. Application
+(Application, Document) .. File
+@enduml

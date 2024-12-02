@@ -1,0 +1,148 @@
+<% include header_admin %>
+
+<body>
+  <% include navbar_admin %> 
+  <section class="section">
+    <div class="container-fluid">
+      <div class="justify-content-center row">
+        <div class="col-lg-12">
+          <div class="candidate-list-widgets mb-4">
+            <form action="/admin/filter-recruiter-requests" method="POST" class="form-inline">
+              <div class="row g-2">
+                <div class="col-lg-3">
+                  <div class="filter-job-form">
+                    <i class="uil uil-briefcase-alt"></i>
+                    <input id="exampleFormControlInput1" placeholder="Recruiter Name" name="recruiter_name" type="search" class="form-control filter-job-input-box" />
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <div class="filter-job-form">
+                    <i class="uil uil-clipboard-notes"></i>
+                    <select class="form-select selectForm__inner" name="organization_name">
+                      <option value="" selected disabled>Organization</option>
+                      <% for (let i = 0; i < organizations.length; i++) { %>
+                        <option value="<%= organizations[i].name %>"><%= organizations[i].name %></option>
+                      <% } %>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-3 d-flex align-items-center">
+                  <button type="submit" class="btn btn-primary me-2">
+                    <i class="uil uil-filter"></i> Filter
+                  </button>
+                  <a class="btn btn-primary" href="/admin/recruiter-requests">
+                    <i class="uil uil-filter-slash"></i> Reset
+                  </a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="align-items-center row">
+            <div class="col-lg-8"></div>
+            <div class="col-lg-4"></div>
+          </div>
+        </div>
+      </div>
+      <div class="candidate-list">
+        <% if (recruiter_requests.length === 0) { %>
+          <div class="alert alert-danger" role="alert">
+            Oops! No organization requests found.
+          </div>
+        <% } %>
+        <% for (let i = 0; i < recruiter_requests.length; i++) { %>
+          <div class="candidate-list-box card mt-4">
+            <div class="p-4 card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                  <div class="candidate-list-content ms-3">
+                    <h5><%= recruiter_requests[i].user_first_name.toUpperCase() %> <%= recruiter_requests[i].user_last_name.toUpperCase() %></h5>
+                    <p><i class="mdi mdi-domain"></i> <%= recruiter_requests[i].organization_name.toUpperCase() %></p>
+                    <ul class="list-inline">
+                      <li class="list-inline-item">
+                        <i class="mdi mdi-email"></i> <%= recruiter_requests[i].user_email %>
+                      </li>
+                      <li class="list-inline-item">
+                        <i class="mdi mdi-phone"></i> <%= recruiter_requests[i].user_phone %>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center">
+                  <a href="#" class="btn btn-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#acceptModal" data-id="<%= recruiter_requests[i].request_id %>">
+                    <i class="mdi mdi-check"></i> Accept
+                  </a>
+                  <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#denyModal" data-id="<%= recruiter_requests[i].request_id %>">
+                    <i class="mdi mdi-close"></i> Deny
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <!-- Accept Modal -->
+  <div class="modal fade" id="acceptModal" tabindex="-1" aria-labelledby="acceptModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="acceptModalLabel">Confirm Acceptance</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to accept this recruiter request?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a id="confirmAcceptButton" class="btn btn-success" href="#">Accept</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deny Modal -->
+  <div class="modal fade" id="denyModal" tabindex="-1" aria-labelledby="denyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="denyModalLabel">Confirm Denial</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to deny this request?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a id="confirmDenyButton" class="btn btn-danger" href="#">Deny</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const acceptModal = document.getElementById('acceptModal');
+      const confirmAcceptButton = document.getElementById('confirmAcceptButton');
+      acceptModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const requestId = button.getAttribute('data-id');
+        confirmAcceptButton.href = `/admin/accept-recruiter-request/${requestId}`;
+      });
+
+      const denyModal = document.getElementById('denyModal');
+      const confirmDenyButton = document.getElementById('confirmDenyButton');
+      denyModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const requestId = button.getAttribute('data-id');
+        confirmDenyButton.href = `/admin/deny-recruiter-request/${requestId}`;
+      });
+    });
+  </script>
+</body>
+</html>

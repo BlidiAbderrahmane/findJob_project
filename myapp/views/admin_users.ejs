@@ -1,0 +1,320 @@
+<% include header_admin %>
+<body>
+  <% include navbar_admin %>
+  <section class="section">
+    <div class="container-fluid"> 
+      <div class="justify-content-center row">
+        <div class="col-lg-12">
+          <div class="candidate-list-widgets mb-4">
+            <form action="/admin/filter-users" method="POST" class="form-inline">
+              <div class="g-2 row">
+                <div class="col-lg-3">
+                  <div class="filler-job-form">
+                    <input id="exampleFormControlInput1" name="username" placeholder="User's Name" type="search" class="form-control filler-job-input-box form-control mdi mdi-magnify" />
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <select class="form-select" name="status" id="accountTypeSelect" aria-label="Account Type">
+                    <option value="" selected>Account Type</option>
+                    <option value="candidate">Candidate</option>
+                    <option value="recruiter">Recruiter</option>
+                    <option value="admin">Administrator</option>
+                  </select>
+                </div>
+                <div class="col-lg-3">
+                  <select class="form-select" name="active" id="statusSelect" aria-label="Active or Inactive">
+                    <option value="" selected>Active or Inactive</option>
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                  </select>
+                </div>
+                <div class="col-lg-3">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="uil uil-filter"></i> Filter
+                  </button>
+                  <a class="btn btn-primary" href="/admin/users">
+                    <i class="uil uil-filter"></i> Reset
+                  </a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- User List -->
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="candidate-list">
+            <% if (users.length === 0) { %>
+              <div class="alert alert-danger" role="alert">
+                Oops! No users found.
+              </div>
+            <% } else { %>
+              <% users.forEach(user => { %>
+                <div class="candidate-list-box card mt-4">
+                  <div class="p-4 card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="d-flex align-items-center">
+                        <div class="candidate-list-content ms-3">
+                          <h5><%= user.first_name.toUpperCase() %> <%= user.last_name.toUpperCase() %></h5>
+                          <ul class="list-inline">
+                            <li class="list-inline-item"><i class="mdi mdi-email"></i> <%= user.email %></li>
+                            <li class="list-inline-item"><i class="mdi mdi-phone"></i> <%= user.phone %> </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="d-flex">
+                        <a href="#" 
+                          class="btn btn-primary btn-sm me-2" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#editUserModal" 
+                          data-userid="<%= user.user_id %>" 
+                          data-adressemail="<%= user.email %>" 
+                          data-nom="<%= user.last_name %>" 
+                          data-prenom="<%= user.first_name %>" 
+                          data-telephone="<%= user.phone %>">
+                          <i class="mdi mdi-pencil"></i> Edit
+                        </a>
+                        <% if (user.active) { %>
+                         <a href="#" class="btn btn-danger btn-sm me-2" data-bs-toggle="modal" data-bs-target="#blockmodal" data-userid="<%= user.user_id %>">
+                            <i class="mdi mdi-account-cancel"></i> Block
+                         </a>
+                        <% } %>
+
+                        <% if (user.status != 'admin') { %>
+                          <a href="#" class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" data-bs-target="#adminUserModal" data-userid="<%= user.user_id %>">
+                            <i class="mdi mdi-account-check"></i> Make Admin
+                          </a>
+                        <% } %>
+
+                        <% if (!user.active) { %>
+                          <a href="#" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#activateUserModal" data-userid="<%= user.user_id %>">
+                            <i class="mdi mdi-account-check"></i> Activate
+                          </a>
+                        <% } %>
+                        
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% }) %>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modals -->
+  <!-- Modal for Adding User -->
+  <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addUserModalLabel">Add User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addUserForm" action="/admin/add-user" method="POST">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email Address</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="last_name" class="form-label">Last Name</label>
+              <input type="text" class="form-control" id="last_name" name="last_name" required>
+            </div>
+            <div class="mb-3">
+              <label for="first_name" class="form-label">First Name</label>
+              <input type="text" class="form-control" id="first_name" name="first_name" required>
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">Phone</label>
+              <input type="text" class="form-control" id="phone" name="phone" required>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary" name="ajout" value="add">Add</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Blocking and Activating User Modals -->
+  <!-- Block User Modal -->
+  <div class="modal fade" id="blockmodal" tabindex="-1" aria-labelledby="blockConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteConfirmationModalLabel">Block Confirmation</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to block this user?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a id="confirmBlockButton" class="btn btn-danger" href="#">Block</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activate User Modal -->
+  <div class="modal fade" id="activateUserModal" tabindex="-1" aria-labelledby="activateUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="activateConfirmationModalLabel">Activation Confirmation</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to activate this user?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a id="confirmActivateButton" class="btn btn-success" href="#">Activate</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<!-- EDIT USER MODAL -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editUserForm" action="/admin/update-user" method="POST">
+          <input type="hidden" id="editUserId" name="userId">
+          <div class="mb-3">
+            <label for="editUserAdresseMail" class="form-label">Email Address</label>
+            <input type="email" class="form-control" id="editUserAdresseMail" name="adresseMail" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="editUserName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="editUserName" name="nom" required>
+          </div>
+          <div class="mb-3">
+            <label for="editUserLastName" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="editUserLastName" name="prenom" required>
+          </div>
+          <div class="mb-3">
+            <label for="editUserTelephone" class="form-label">Phone</label>
+            <input type="text" class="form-control" id="editUserTelephone" name="telephone" required>
+          </div>
+          <div class="mb-3">
+            <label for="editUserPassword" class="form-label">Password</label>
+            <input type="password" class="form-control" id="editUserPassword" name="password">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Edit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Setting Admin -->
+<div class="modal fade" id="adminUserModal" tabindex="-1" aria-labelledby="adminUserModal" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="activateConfirmationModalLabel">Confirm Admin Role Assignment</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              Are you sure you want to assign the administrator role to this user?
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <a id="confirmAdminButton" class="btn btn-success" href="#">Confirm</a>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+  <script>
+    // Block user modal logic
+    const blockModal = document.getElementById('blockmodal');
+    blockModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const userId = button.getAttribute('data-userid');
+      /////
+      const adminUserModal = document.getElementById('adminUserModal');
+      const editUserModal = document.getElementById('editUserModal');
+      document.getElementById('confirmBlockButton').href = `/admin/deactivate-user/${userId}`;
+    });
+
+    adminUserModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute('data-userid');
+            const confirmAdminButton = document.getElementById('confirmAdminButton');
+            confirmAdminButton.href = `/admin/set-admin/${userId}`;
+        });
+
+    // Activate user modal logic
+    const activateUserModal = document.getElementById('activateUserModal');
+    activateUserModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const userId = button.getAttribute('data-userid');
+      document.getElementById('confirmActivateButton').href = `/admin/activate-user/${userId}`;
+    });
+
+    // Add event listener to the "Edit User" modal
+    editUserModal.addEventListener('show.bs.modal', function(event) {
+
+      // Retrieve the button that triggered the modal
+      const button = event.relatedTarget;
+
+      // Extract user details from the data attributes of the button
+      const userId = button.getAttribute('data-userid');
+      const emailAddress = button.getAttribute('data-adressemail');
+      const lastName = button.getAttribute('data-nom');
+      const firstName = button.getAttribute('data-prenom');
+      const phone = button.getAttribute('data-telephone');
+      const password = button.getAttribute('data-password');
+
+      // Populate the input fields in the modal with the retrieved values
+      document.getElementById('editUserId').value = userId;
+      document.getElementById('editUserAdresseMail').value = emailAddress;
+      document.getElementById('editUserName').value = lastName;
+      document.getElementById('editUserLastName').value = firstName;
+      document.getElementById('editUserTelephone').value = phone;
+      document.getElementById('editUserPassword').value = password;
+
+    });
+
+    // Alert messages
+    document.addEventListener("DOMContentLoaded", function() {
+      const alertMessage = "<%= alertMessage %>";
+      if (alertMessage === 'success') {
+          alert('User has been successfully created');
+      } else if (alertMessage === 'duplicate') {
+          alert('A user with this email already exists');
+      } else if (alertMessage === 'error') {
+          alert('An error occurred');
+      } else if (alertMessage === 'deactivated') {
+          alert('User has been successfully blocked');
+      } else if (alertMessage === 'activated') {
+          alert('User has been successfully activated');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<% include header_admin %>
+
+<body>
+  <% include navbar_admin %>
+  <section class="section">
+    <div class="container-fluid">
+      <div class="justify-content-center row">
+        <div class="col-lg-12">
+          <div class="organization-list-widgets mb-4">
+            <form action="/admin/filter-organizations" method="POST" class="form-inline">
+              <div class="g-2 row">
+                <div class="col-lg-3">
+                  <div class="filter-job-form">
+                    <i class="uil uil-search"></i>
+                    <input id="searchOrganization" name="name" placeholder="Organization Name" type="search" class="form-control filter-job-input-box form-control" />
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <div class="filter-job-form">
+                    <i class="uil uil-filter"></i>
+                    <select class="form-select selectForm__inner" name="type">
+                      <option value="" selected disabled="disabled">Type</option>
+                      <option value="eurl">EURL</option>
+                      <option value="sarl">SARL</option>
+                      <option value="association">Association</option>
+                      <option value="sasu">SASU</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <div class="filter-job-form">
+                    <i class="uil uil-filter"></i>
+                    <select class="form-select selectForm__inner" name="recruiter" aria-label="Recruiter">
+                      <option value="" selected disabled>Recruiter</option>
+                      <%
+                      const uniqueRecruiters = new Set();
+                      const distinctRecruiters = [];
+                    
+                      recruiters.forEach(recruiter => {
+                        if (!uniqueRecruiters.has(recruiter.recruiter_id)) {
+                          uniqueRecruiters.add(recruiter.recruiter_id);
+                          distinctRecruiters.push(recruiter);
+                        }
+                      });
+                    %>
+                    
+                    <% for (let i = 0; i < distinctRecruiters.length; i++) { %>
+                      <option value="<%= distinctRecruiters[i].recruiter_id %>">
+                        <%= distinctRecruiters[i].recruiter_first_name %> <%= distinctRecruiters[i].recruiter_last_name %>
+                      </option>
+                    <% } %>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <div>
+                    <button class="btn btn-primary" type="submit">
+                      <i class="uil uil-filter"></i> Filter
+                    </button>
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <div>
+                    <a class="btn btn-primary" href="/admin/organizations">
+                      <i class="uil uil-plus"></i> Reset
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="align-items-center row">
+            <div class="col-lg-8">
+              
+            </div>
+            <div class="col-lg-4">
+              <div class="candidate-list-widgets">
+                <div class="row">
+                  <div class="col-lg-5">
+                  </div>                                       
+
+                  <div class="col-lg-7">
+                    <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#addOrganizationModal">
+                      <i class="uil uil-filter"></i> Add
+                    </a>
+                  </div>
+                </div>
+               </div>
+              </div>
+            </div>
+        </div>
+      <div class="candidate-list">
+        <% if (organizations.length === 0) { %>
+          <div class="alert alert-danger" role="alert">
+            Oops! No organizations found.
+          </div>
+        <% } %>
+  
+        <% for (let i = 0; i < organizations.length; i++) { %>
+          <div class="candidate-list-box card mt-4">
+            <div class="p-4 card-body">
+              <div class="d-flex justify-content-between">
+                <div class="d-flex align-items-center">
+                  <div class="candidate-list-content">
+                    <h5 class="fs-19 mb-0">
+                      <a class="primary-link" href="#"><%= organizations[i].name.toUpperCase() %></a>
+                    </h5>
+                    <p class="text-muted mb-2">SIREN: <%= organizations[i].siren %></p>
+                    <ul class="list-inline mb-0 text-muted">
+                      <li class="list-inline-item">
+                        <i class="mdi mdi-domain"></i> Type: <%= organizations[i].type %>
+                      </li>
+                      <li class="list-inline-item">
+                        <i class="mdi mdi-map-marker"></i> Headquarters: <%= organizations[i].headquarters.toUpperCase() %>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center">
+                  <a href="#" 
+                    class="btn btn-primary btn-sm me-2" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#editOrganizationModal" 
+                    data-id="<%= organizations[i].organization_id %>" 
+                    data-name="<%= organizations[i].name %>" 
+                    data-type="<%= organizations[i].type %>" 
+                    data-siren="<%= organizations[i].siren %>" 
+                    data-headquarters="<%= organizations[i].headquarters %>">
+                      <i class="mdi mdi-pencil"></i> Edit
+                  </a>
+                  <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal" data-id="<%= organizations[i].organization_id %>">
+                    <i class="mdi mdi-trash-can"></i> Delete
+                  </a>  
+                </div>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+  
+
+<!-- ADD MODAL -->
+
+<div class="modal fade" id="addOrganizationModal" tabindex="-1" aria-labelledby="addOrganizationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="addOrganizationModalLabel">Add Organization</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form id="addOrganizationForm" action="/admin/add-organization" method="POST">
+                  <div class="mb-3">
+                      <label for="organizationName" class="form-label">Organization Name</label>
+                      <input type="text" class="form-control" id="organizationName" name="name" required>
+                  </div>
+                  <div class="mb-3">
+                      <label for="organizationType" class="form-label">Type</label>
+                      <select class="form-select" id="organizationType" name="type" required>
+                          <option value="" selected disabled>Select Type</option>
+                          <option value="eurl">EURL</option>
+                          <option value="sarl">SARL</option>
+                          <option value="association">Association</option>
+                          <option value="sasu">SASU</option>
+                          <option value="other">Other</option>
+                      </select>
+                  </div>
+                  <div class="mb-3">
+                      <label for="organizationSiren" class="form-label">SIREN</label>
+                      <input type="text" class="form-control" id="organizationSiren" name="siren" required>
+                  </div>
+                  <div class="mb-3">
+                      <label for="organizationHeadquarters" class="form-label">Headquarters</label>
+                      <input type="text" class="form-control" id="organizationHeadquarters" name="headquarters" required>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-primary" name="add" value="add">Add</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="deleteConfirmationModalLabel">Delete Confirmation</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              Are you sure you want to delete this organization?
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <a id="confirmDeleteButton" class="btn btn-danger" href="#">Delete</a>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal fade" id="editOrganizationModal" tabindex="-1" aria-labelledby="editOrganizationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editOrganizationModalLabel">Edit Organization</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editOrganizationForm" action="/admin/update-organization" method="POST">
+          <input type="hidden" id="editOrganizationId" name="organizationId">
+          <div class="mb-3">
+            <label for="editOrganizationName" class="form-label">Organization Name</label>
+            <input type="text" class="form-control" id="editOrganizationName" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="editOrganizationType" class="form-label">Type</label>
+            <select class="form-select" id="editOrganizationType" name="type" required>
+              <option value="" selected disabled>Select Type</option>
+              <option value="eurl">EURL</option>
+              <option value="sarl">SARL</option>
+              <option value="association">Association</option>
+              <option value="sasu">SASU</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="editOrganizationSiren" class="form-label">SIREN</label>
+            <input type="text" class="form-control" id="editOrganizationSiren" name="siren" readonly required>
+          </div>
+          <div class="mb-3">
+            <label for="editOrganizationHeadquarters" class="form-label">Headquarters</label>
+            <input type="text" class="form-control" id="editOrganizationHeadquarters" name="headquarters" required>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Edit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</body>
+</html>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      const deleteConfirmationModal = document.getElementById('deleteConfirmationModal');
+      const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+      let organizationIdToDelete;
+
+      deleteConfirmationModal.addEventListener('show.bs.modal', function(event) {
+          const button = event.relatedTarget;
+          organizationIdToDelete = button.getAttribute('data-id');
+          confirmDeleteButton.href = `/admin/delete-organization/${organizationIdToDelete}`;
+      });
+  });
+
+  editOrganizationModal.addEventListener('show.bs.modal', function(event) {
+    const button = event.relatedTarget; // Button that triggered the modal
+    const organizationId = button.getAttribute('data-id'); // Retrieve organization ID
+    const organizationName = button.getAttribute('data-name'); // Retrieve organization name
+    const organizationType = button.getAttribute('data-type'); // Retrieve organization type
+    const organizationSiren = button.getAttribute('data-siren'); // Retrieve organization SIREN
+    const organizationHeadquarters = button.getAttribute('data-headquarters'); // Retrieve organization headquarters
+
+    const editForm = document.getElementById('editOrganizationForm'); // Access the form element
+    editForm.action = `/admin/update-organization`; // Set the form action URL
+
+    // Populate the form fields with the retrieved values
+    document.getElementById('editOrganizationId').value = organizationId;
+    document.getElementById('editOrganizationName').value = organizationName;
+    document.getElementById('editOrganizationType').value = organizationType;
+    document.getElementById('editOrganizationSiren').value = organizationSiren;
+    document.getElementById('editOrganizationHeadquarters').value = organizationHeadquarters;
+});
+
+
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      const alertMessage = "<%= alertMessage %>";
+      if (alertMessage === 'success') {
+          alert('The organization was successfully created');
+      } else if (alertMessage === 'duplicate') {
+          alert('An organization with this SIREN already exists');
+      } else if (alertMessage === 'error') {
+          alert('An error occurred');
+      } else if (alertMessage === 'deleted') {
+        alert('The organization was successfully deleted');
+      } 
+  });
+</script>

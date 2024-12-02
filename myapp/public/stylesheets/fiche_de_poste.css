@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+html,body{
+    display: grid;
+    width: 100%;
+    padding-top: 0;
+    margin-top: 0;
+    place-items: center;
+    background: -webkit-linear-gradient(left, #003366,#004080,#0059b3
+  , #0073e6);
+}
+
+nav{
+    width: 100%;
+    top: 0;
+    padding-top: 0;
+    margin-top: 0;
+    position: fixed;
+    margin-bottom: 40px;
+}
+
+.ajouterOffre {
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px;
+  position: relative;
+  width: 60%;
+  height: 400px;
+}
+
+.ajouterOffre h1 {
+  margin-bottom: 50px;
+}
+
+select {
+  width: 100%;
+}
+
+
+.ajouterOffre input[type="submit"] {
+  border-radius: 20px;
+  background: -webkit-linear-gradient(left, #003366, #004080, #0059b3, #0073e6);
+  padding: 10px 20px;
+  cursor: pointer;
+  border-color: white;
+  border-style: solid;
+  position: absolute;
+  color: white;
+  position: absolute;
+  right: 40px;
+  margin-top: 60px;
+}
+
+.ajouterOffre input[type="submit"]:hover {
+  background: gray;
+  text-decoration: none;
+}
+
+.ajouterOffre input[type="text"], input[type="date"] {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.ajouterOffre{
+  margin-bottom: 75px;
+}
+
+#ficheExistante {
+  width: 100%;
+}
+
+.creerOrga {
+  margin-bottom: 60px;
+}

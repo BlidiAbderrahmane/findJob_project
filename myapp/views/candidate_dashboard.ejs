@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/candidat.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title><%= title %></title>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <% if (status === "candidate") { %>
+        <% include navbar_candidate %>
+    <% } else { %>
+        <% include navbar_recruiter %>
+    <% } %>
+
+    <% if (success_msg) { %>
+        <div class="alert alert-success">
+            <%= success_msg %>
+        </div>
+    <% } %>
+
+    <h1><%= title %></h1>
+
+    <form id="filterForm" action="/candidate/filter-job-offers" method="POST">
+        <div class="search-bar">
+            <input type="text" name="search" placeholder="Search...">
+        </div>
+        <div class="filter-menu">
+            <div class="options-wrapper">
+                <div class="row gx-2 w-100">
+                    <div class="col">
+                        <select name="location" class="form-select">
+                            <option value="">Location</option>
+                            <% locations.forEach((location) => { %> 
+                            <option value="<%= location.location %>"><%= location.location %></option>
+                            <% }) %> 
+                        </select>
+                    </div>
+                    <div class="col">
+                        <select name="remote_work" class="form-select">
+                            <option value="">Remote Work</option>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <select name="job_title" class="form-select">
+                            <option value="">Job Title</option>
+                            <% jobTitles.forEach((jobTitle) => { %> 
+                            <option value="<%= jobTitle.title %>"><%= jobTitle.title %></option>
+                            <% }) %> 
+                        </select>
+                    </div>
+                    <div class="col">
+                        <select name="organization" class="form-select">
+                            <option value="">Organization</option>
+                            <% organizations.forEach((organization) => { %> 
+                            <option value="<%= organization.name %>"><%= organization.name %></option>
+                            <% }) %> 
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <button id="filter-button" class="btn btn-primary w-100">Filter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="offresEmploi">
+        <% jobOffers.forEach((jobOffer) => { %> 
+        <div class="offreEmploi"> 
+            <div class="candidature_description">
+                <h3><%= jobOffer.notes %></h3>
+                <p><%= jobOffer.description %></p>
+                <p>Validation Date: <%= jobOffer.validation_date %></p>
+                <div class="buttons-container">
+                    <button type="button" class="btn btn-primary apply-btn" data-bs-toggle="modal" data-bs-target="#uploadModal" data-offer-id="<%= jobOffer.offer_id %>" data-doc-count="<%= jobOffer.document_count %>">Apply</button>
+                    <form action="/candidate/job_description" method="POST">
+                        <input type="hidden" name="job_offer_id" value="<%= jobOffer.offer_id %>">
+                        <button type="submit" class="btn btn-secondary">Job Description</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <% }) %>
+    </div>
+
+    <!-- Modal Upload -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadModalLabel">Upload your documents</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadForm" action="/candidate/dashboard/apply" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="job_offer_id" id="job_offer_id">
+                        <div id="uploadFieldsContainer"></div>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var uploadModal = document.getElementById('uploadModal');
+            uploadModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget;
+                var jobOfferId = button.getAttribute('data-offer-id');
+                var docCount = button.getAttribute('data-doc-count');
+                var modalTitle = uploadModal.querySelector('.modal-title');
+                var jobOfferInput = uploadModal.querySelector('#job_offer_id');
+                var uploadFieldsContainer = uploadModal.querySelector('#uploadFieldsContainer');
+
+                modalTitle.textContent = 'Upload your documents';
+                jobOfferInput.value = jobOfferId;
+
+                // Clear existing fields
+                uploadFieldsContainer.innerHTML = '';
+
+                // Generate required number of upload fields
+                for (let i = 0; i < docCount; i++) {
+                    let div = document.createElement('div');
+                    div.className = 'mb-3';
+                    div.innerHTML = `
+                        <label for="document_${i}" class="form-label">Document ${i + 1}</label>
+                        <input type="file" name="documents" id="document_${i}" class="form-control" required>
+                    `;
+                    uploadFieldsContainer.appendChild(div);
+                }
+            });
+
+            // Validate form before submission
+            var uploadForm = document.getElementById('uploadForm');
+            uploadForm.addEventListener('submit', function(event) {
+                var fileInputs = uploadForm.querySelectorAll('input[type="file"]');
+                var fileNames = new Set();
+                var hasDuplicate = false;
+
+                fileInputs.forEach(function(input) {
+                    if (fileNames.has(input.files[0].name)) {
+                        hasDuplicate = true;
+                    } else {
+                        fileNames.add(input.files[0].name);
+                    }
+                });
+
+                if (hasDuplicate) {
+                    event.preventDefault();
+                    alert('Ensure that all documents are different.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
