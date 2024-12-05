@@ -96,7 +96,8 @@ router.get('/dashboard', function(req, res, next) {
 // Route to view job description
 router.post('/job_description', function(req, res, next) {
     const jobOfferId = req.body.job_offer_id;
-    jobDescriptionModel.getDescriptionByJobOfferId(jobOfferId, function(jobDescription) {
+    jobDescriptionModel.getDescriptionByOfferId(jobOfferId, function(jobDescription) {
+
         res.render('candidate_job_description', { 
             title: 'Job Description', 
             jobDescription: jobDescription, 

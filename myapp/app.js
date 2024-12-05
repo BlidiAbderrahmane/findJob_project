@@ -79,7 +79,7 @@ app.all('*', (req, res, next) => {
     "/recruiter/delete-job-offer", "/recruiter/job-posting-details",
     "/recruiter/modify-offer", "/recruiter/modify-offer-submit",
     "/recruiter/home", "/settings", "/candidate/filter-job-offers", "/candidate/delete-application/:id", 
-    "/recruiter/download/:applicationId"
+    "/recruiter/download/:applicationId", '/candidate/job_description',  
 ];
 
 

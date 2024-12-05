@@ -149,10 +149,8 @@ module.exports = {
         `;
     
         db.query(sql, [offerId], function (err, results) {
-            if (err) {
-                return callback(err, null);
-            }
-            callback(null, results[0]); // Return the first record if found
+            if (err) throw err;
+            callback(results[0]); // Return the first record if found
         });
     }
 };
