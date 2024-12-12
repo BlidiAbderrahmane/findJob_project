@@ -94,8 +94,8 @@ router.post('/settings', (req, res) => {
   userModel.update(userId, updatedPassword, last_name, first_name, phone, (success) => {
     if (success) {
       // Update session data to reflect changes
-      req.session.last_name = last_name;
-      req.session.first_name = first_name;
+      req.session.lastName = last_name;
+      req.session.firstName = first_name;
       req.session.phone = phone;
 
       req.flash('success', 'Profile updated successfully!');
